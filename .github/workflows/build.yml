@@ -1,0 +1,31 @@
+name: Build Windows exe
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installer les dependances
+        run: npm install
+
+      - name: Construire le .exe
+        run: npm run build-win
+
+      - name: Mettre le .exe a disposition au telechargement
+        uses: actions/upload-artifact@v4
+        with:
+          name: CARSAT-Dons-Materiel-exe
+          path: dist/*.exe
