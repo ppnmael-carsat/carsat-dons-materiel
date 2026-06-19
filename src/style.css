@@ -1,0 +1,180 @@
+/* 
+   POLICES + COULEURS DU SITE
+   On importe les polices depuis Google Fonts, et on définit
+   toutes les couleurs une seule fois ici (variables --xxx).
+   Comme ça, si on veut changer une couleur plus tard,
+   on la change à un seul endroit et tout le site change.
+*/
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
+:root {
+  --bleu: #1a2e4a; --bleu-clair: #2d4f7c; --accent: #e8a020;
+  --fond: #f4f1eb; --blanc: #ffffff; --texte: #1a2e4a;
+  --gris: #8a9ab0; --bordure: #d4cfc6; --vert: #2d7a4f; --rouge: #c0392b;
+}
+
+/* Reset de base : on enlève les marges/paddings par défaut du navigateur */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--fond); color: var(--texte); min-height: 100vh; }
+
+
+/*
+   EN-TÊTE (header tout en haut : logo CARSAT + titre + statut sync)
+   */
+header { background: var(--bleu); color: var(--blanc); padding: 24px 40px; display: flex; align-items: center; gap: 20px; border-bottom: 4px solid var(--accent); }
+.logo-badge { background: var(--accent); color: var(--bleu); font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; padding: 8px 14px; letter-spacing: 1px; }
+header h1 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+header p { font-size: 13px; color: var(--gris); margin-top: 2px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+/* petit badge "Connexion... / Synchronisé / Hors ligne" en haut à droite */
+.sync-status { font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 12px; border-radius: 2px; }
+.sync-ok { background: rgba(45,122,79,0.3); color: #a8e6bf; }   /* vert = ça marche */
+.sync-err { background: rgba(192,57,43,0.3); color: #f1948a; } /* rouge = erreur */
+.sync-load { background: rgba(232,160,32,0.2); color: #f8c471; } /* orange = en cours */
+
+/* statut de synchro reseau en haut a droite */
+
+
+/*
+   ONGLETS (Saisie / Historique des exports / Sauvegarde)
+   */
+.tabs { display: flex; background: var(--bleu-clair); padding: 0 40px; }
+.tab { padding: 12px 24px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab:hover { color: rgba(255,255,255,0.9); }
+.tab.active { color: var(--blanc); border-bottom-color: var(--accent); } /* l'onglet sélectionné a une barre orange en dessous */
+
+/* par défaut on cache tous les contenus d'onglet, sauf celui qui a "active" */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+
+/*
+   ONGLET "SAISIE" — mise en page générale (2 colonnes)
+   colonne gauche = formulaire, colonne droite = liste
+   */
+.container { max-width: 1100px; margin: 0 auto; padding: 36px 24px; display: grid; grid-template-columns: 400px 1fr; gap: 32px; align-items: start; }
+
+/* "panel" = les blocs blancs avec un titre bleu en haut (utilisé partout) */
+.panel { background: var(--blanc); border: 1px solid var(--bordure); border-radius: 2px; }
+.panel-header { background: var(--bleu); color: var(--blanc); padding: 14px 20px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+.panel-header .dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; } /* petit point orange décoratif */
+.panel-body { padding: 20px; }
+
+
+/* Formulaire (champs, labels, selects, inputs) */
+.field { margin-bottom: 16px; }
+label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--gris); margin-bottom: 6px; }
+select, input[type="text"], input[type="number"] { width: 100%; padding: 10px 12px; border: 1.5px solid var(--bordure); border-radius: 2px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--texte); background: var(--fond); transition: border-color 0.2s; outline: none; }
+select:focus, input:focus { border-color: var(--bleu-clair); background: var(--blanc); }
+
+/* les 3 groupes de champs (PC, écran, périphérique) sont cachés par défaut */
+/* le JS ajoute la classe "visible" sur le bon groupe selon le type choisi */
+.fields-pc { display: none; }
+.fields-pc.visible { display: block; }
+
+/* ligne avec 2 colonnes (utilisé pour "Formaté / Bon état" et "Modèle / Quantité") */
+.row-2 { display: grid; grid-template-columns: 1fr 80px; gap: 12px; align-items: end; }
+
+
+/* Boutons principaux du formulaire */
+.btn-add { width: 100%; padding: 13px; background: var(--bleu); color: var(--blanc); border: none; border-radius: 2px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
+.btn-add:hover { background: var(--bleu-clair); }
+
+.btn-export { width: 100%; padding: 13px; background: var(--accent); color: var(--bleu); border: none; border-radius: 2px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; margin-top: 12px; }
+.btn-export:hover { opacity: 0.85; }
+.btn-export:disabled { opacity: 0.4; cursor: not-allowed; } /* grisé tant qu'il n'y a rien à exporter */
+
+/* petit compteur "Total : X équipement(s)" sous les boutons */
+.counter { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--gris); text-align: center; margin-top: 10px; }
+.counter span { color: var(--accent); font-weight: 500; font-size: 16px; } /* le chiffre en orange et plus gros */
+
+
+/* Liste des équipements (colonne de droite) */
+.list-empty { text-align: center; padding: 60px 20px; color: var(--gris); } /* message quand la liste est vide */
+.list-empty .icon { font-size: 40px; margin-bottom: 12px; }
+.list-empty p { font-size: 14px; }
+
+.item-list { list-style: none; }
+
+/* une ligne de la liste = un équipement */
+.item { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--bordure); transition: background 0.15s; animation: slideIn 0.25s ease; }
+/* petite animation : la ligne "glisse" vers le bas en apparaissant */
+@keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.item:hover { background: #faf8f4; }
+.item:last-child { border-bottom: none; } /* pas de ligne sous le dernier élément */
+
+/* étiquette colorée qui indique le type (PC Portable, Écran, etc.) */
+.item-badge { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 2px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+.badge-pc { background: #dceaf7; color: #1a4a7c; }       /* bleu : PC Portable / Tour */
+.badge-ecran { background: #d4eedd; color: #1a5c38; }    /* vert : Écran */
+.badge-clavier { background: #fde8c8; color: #7c4a00; }  /* orange : Clavier */
+.badge-souris { background: #f0d8f5; color: #5c1a7c; }    /* violet : Souris */
+
+.item-info { flex: 1; min-width: 0; }
+.item-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* coupe le texte avec "..." si trop long */
+.item-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gris); margin-top: 2px; } /* référence / numéro de série / commentaire */
+
+/* badge "x3" quand la quantité est supérieure à 1 */
+.item-qty { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--accent); background: #fdf3e0; padding: 2px 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* bouton "✕" pour supprimer une ligne */
+.btn-del { background: none; border: 1px solid var(--bordure); border-radius: 2px; color: var(--rouge); font-size: 14px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+.btn-del:hover { background: #fdecea; }
+
+
+/*
+   ONGLET "HISTORIQUE DES EXPORTS"
+*/
+.historique-container { max-width: 900px; margin: 0 auto; padding: 36px 24px; }
+
+/* barre du haut avec le bouton "Exporter rapport global" aligné à droite */
+.hist-toolbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+.btn-rapport-global { padding: 10px 20px; background: var(--bleu); color: var(--blanc); border: none; border-radius: 2px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+.btn-rapport-global:hover { background: var(--bleu-clair); }
+.btn-rapport-global:disabled { opacity: 0.4; cursor: not-allowed; } /* désactivé si l'historique est vide */
+
+/* message "Aucun export effectué" quand l'historique est vide */
+.hist-empty { text-align: center; padding: 80px 20px; color: var(--gris); }
+.hist-empty .icon { font-size: 48px; margin-bottom: 16px; }
+
+/* une ligne de l'historique = un export (avec sa date, son nom de fichier...) */
+.hist-item { background: var(--blanc); border: 1px solid var(--bordure); border-radius: 2px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; padding: 16px 20px; transition: box-shadow 0.2s; }
+.hist-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); } /* petite ombre au survol */
+.hist-icon { font-size: 24px; flex-shrink: 0; }
+.hist-info { flex: 1; }
+.hist-date { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--bleu); } /* nom du fichier */
+.hist-meta { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gris); margin-top: 3px; } /* date + nombre d'équipements */
+
+/* boutons "Retélécharger" et "✕" sur chaque ligne d'historique */
+.btn-retelecharger { padding: 8px 16px; background: var(--bleu); color: var(--blanc); border: none; border-radius: 2px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+.btn-retelecharger:hover { background: var(--bleu-clair); }
+.btn-suppr-hist { padding: 8px 12px; background: none; color: var(--rouge); border: 1px solid var(--bordure); border-radius: 2px; font-size: 12px; cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
+.btn-suppr-hist:hover { background: #fdecea; }
+.hist-actions { display: flex; gap: 8px; align-items: center; } /* les 2 boutons côte à côte */
+
+
+/*
+   PETIT MESSAGE EN BAS À DROITE (toast de confirmation/erreur)
+   */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--vert); color: white; padding: 12px 20px; border-radius: 2px; font-size: 13px; font-weight: 500; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; z-index: 999; }
+.toast.show { opacity: 1; transform: translateY(0); } /* classe ajoutée par le JS pour le faire apparaître */
+
+
+/*
+   ONGLET "SAUVEGARDE" (export / import du fichier JSON)
+   */
+.sauvegarde-container { max-width: 700px; margin: 0 auto; padding: 36px 24px; display: flex; flex-direction: column; gap: 20px; }
+
+/* une "carte" = un bloc avec une icône, un texte explicatif et un bouton */
+.sauvegarde-card { background: var(--blanc); border: 1px solid var(--bordure); border-radius: 2px; padding: 24px; display: flex; align-items: center; gap: 20px; }
+.sauvegarde-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.sauvegarde-icon { font-size: 28px; flex-shrink: 0; width: 40px; text-align: center; }
+.sauvegarde-info { flex: 1; }
+.sauvegarde-info h3 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--bleu); margin-bottom: 6px; }
+.sauvegarde-info p { font-size: 13px; color: var(--gris); line-height: 1.5; }
+
+/* bouton "Exporter" (bleu) et bouton "Importer" (orange) */
+.btn-sauvegarde-export { padding: 11px 22px; background: var(--bleu); color: var(--blanc); border: none; border-radius: 2px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+.btn-sauvegarde-export:hover { background: var(--bleu-clair); }
+.btn-sauvegarde-import { padding: 11px 22px; background: var(--accent); color: var(--bleu); border: none; border-radius: 2px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; flex-shrink: 0; }
+.btn-sauvegarde-import:hover { opacity: 0.85; }

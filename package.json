@@ -1,0 +1,33 @@
+{
+  "name": "carsat-dons-materiel",
+  "version": "1.0.0",
+  "description": "Gestion des dons materiel - CARSAT Normandie",
+  "main": "main.js",
+  "author": "CARSAT Normandie",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win portable",
+    "build-win-installer": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "fr.carsat.normandie.dons",
+    "productName": "CARSAT Dons Materiel",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "src/**/*"
+    ],
+    "win": {
+      "target": [
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "src/icon.ico"
+    }
+  }
+}

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CARSAT Normandie — Gestion des Dons Matériel</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* --- Détails composants --- */
+.details-composants {
+  border: 1px solid #d0d8e4;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.details-composants summary {
+  cursor: pointer;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2d4f7c;
+  background: #eef3fa;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+  justify-content: space-between;
+}
+.details-export-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #2d7a4f;
+}
+.details-export-toggle input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: #2d7a4f;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.details-export-toggle label {
+  margin-bottom: 0 !important;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* --- Barre de recherche historique --- */
+.hist-search {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #d0d8e4;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+  color: #1a2e4a;
+}
+.hist-search:focus {
+  outline: none;
+  border-color: #2d4f7c;
+}
+.hist-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* --- Nom de pile dans l'historique --- */
+.hist-pile-nom {
+  font-weight: 700;
+  color: #1a2e4a;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.hist-filename {
+  font-size: 11px;
+  color: #9aa6b8;
+  font-family: 'DM Mono', monospace;
+}
+.btn-renommer {
+  background: none;
+  border: 1px solid #d0d8e4;
+  color: #2d4f7c;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-renommer:hover {
+  background: #eef3fa;
+}
+
+/* --- Popups modales --- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 46, 74, 0.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.show {
+  display: flex;
+}
+.modal-pile {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.modal-pile h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #1a2e4a;
+}
+.modal-pile p {
+  margin: 0 0 14px 0;
+  font-size: 12px;
+  color: #6b7a90;
+}
+.modal-pile-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0d8e4;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+.modal-pile-input:focus {
+  outline: none;
+  border-color: #2d4f7c;
+}
+.modal-pile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.btn-modal-cancel {
+  background: none;
+  border: 1px solid #d0d8e4;
+  color: #6b7a90;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-modal-cancel:hover {
+  background: #f4f1eb;
+}
+.btn-modal-confirm {
+  background: #1a2e4a;
+  border: none;
+  color: #fff;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-modal-confirm:hover {
+  background: #2d4f7c;
+}
+.details-composants summary:hover {
+  background: #dde8f5;
+}
+.details-composants[open] summary {
+  border-bottom: 1px solid #d0d8e4;
+}
+.details-body {
+  padding: 12px 14px;
+  background: #f8fafc;
+}
+.details-body .row-2 {
+  display: flex;
+  gap: 16px;
+}
+.field-check {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  background: #fff;
+  border: 1px solid #d0d8e4;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.field-check label {
+  margin-bottom: 0 !important;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2e4a;
+  flex: 1;
+  cursor: pointer;
+}
+.field-check input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #2d7a4f;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-badge">CARSAT</div>
+  <div>
+    <h1>Gestion des Dons Matériel</h1>
+    <p>Normandie — Équipe Informatique</p>
+  </div>
+  <div class="header-right">
+    <div class="sync-status sync-load" id="sync-status">Connexion...</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('saisie', this)">Saisie</div>
+  <div class="tab" onclick="switchTab('historique', this)">Historique des exports</div>
+  <div class="tab" onclick="switchTab('sauvegarde', this)">Sauvegarde</div>
+</div>
+
+<div class="tab-content active" id="tab-saisie">
+  <div class="container">
+    <div>
+      <div class="panel">
+        <div class="panel-header">Ajouter un équipement</div>
+        <div class="panel-body">
+
+          <!--TYPE D'ÉQUIPEMENT-->
+          <div class="field">
+            <label>Type d'équipement</label>
+            <select id="type" onchange="updateFields()">
+              <option value="">— Sélectionner —</option>
+              <option value="PC Portable">PC Portable</option>
+              <option value="Tour">Tour (PC fixe)</option>
+              <option value="Écran">Écran</option>
+              <option value="Clavier">Clavier</option>
+              <option value="Souris">Souris</option>
+            </select>
+          </div>
+
+          <!--PC PORTABLE-->
+          <div class="fields-pc" id="fields-pc">
+            <div class="field">
+              <label>Modèle</label>
+              <select id="modele" onchange="if(this.value=='Autre') document.getElementById('modele-autre').style.display='block'; else document.getElementById('modele-autre').style.display='none';">
+                <option value="">— Sélectionner —</option>
+                <option value="Autre">Autre...</option>
+                <option value="HP ProBook 470 G2 i5">HP ProBook 470 G2 i5</option>
+                <option value="Lenovo X230 (ThinkPad)">Lenovo X230 (ThinkPad)</option>
+                <option value="ThinkPad X250 i3 + Graveur DVD">ThinkPad X250 i3 + Graveur DVD</option>
+                <option value="HP ProBook 430 G3">HP ProBook 430 G3</option>
+                <option value="Dell Latitude 5280">Dell Latitude 5280</option>
+                <option value="Lenovo ThinkPad L380">Lenovo ThinkPad L380</option>
+                <option value="Microsoft Surface Pro 4">Microsoft Surface Pro 4</option>
+                <option value="Dell Latitude 5300 i3">Dell Latitude 5300 i3</option>
+                <option value="Dell Latitude 3500 i3">Dell Latitude 3500 i3</option>
+                <option value="Dell Latitude 3500 i5">Dell Latitude 3500 i5</option>
+                <option value="Dell Latitude 3510 i3">Dell Latitude 3510 i3</option>
+                <option value="Dell Precision 7760">Dell Precision 7760</option>
+                <option value="Dell Latitude 3520">Dell Latitude 3520</option>
+                <option value="HP ProBook 450 G9">HP ProBook 450 G9</option>
+                <option value="HP ZBook Fury 16 G10">HP ZBook Fury 16 G10</option>
+                <option value="Lenovo ThinkPad (Boosté)">Lenovo ThinkPad (Boosté)</option>
+                <option value="Microsoft Surface Pro 9">Microsoft Surface Pro 9</option>
+                <option value="Lenovo ThinkPad 16 Gen 1">Lenovo ThinkPad 16 Gen 1</option>
+                <option value="Lenovo ThinkPad P16s Gen 3 Boosté">Lenovo ThinkPad P16s Gen 3 Boosté</option>
+                <option value="Dell Pro 16">Dell Pro 16</option>
+              </select>
+              <input type="text" id="modele-autre" placeholder="Précisez le modèle..." style="display:none; margin-top:8px;">
+            </div>
+            <div class="field"><label>N° d'inventaire</label><input type="text" id="ref" value="" placeholder="ex: 2000-36747"></div>
+            <div class="field"><label>N° de série (S/N)</label><input type="text" id="sn" placeholder="ex: PF591DDN"></div>
+            <div class="row-2">
+              <div class="field"><label>Formaté</label>
+                <select id="formate"><option value="Oui">Oui</option><option value="Non">Non</option></select>
+              </div>
+              <div class="field"><label>Bon état</label>
+                <select id="etat"><option value="Oui">Oui</option><option value="Non">Non</option></select>
+              </div>
+            </div>
+            <details id="details-pc" class="details-composants">
+              <summary onclick="toggleDetails('details-pc')">
+                <span>▸ Détails composants</span>
+                <span class="details-export-toggle" onclick="event.stopPropagation()">
+                  <input type="checkbox" id="export-composants" checked>
+                  <label for="export-composants">Inclure dans Excel</label>
+                </span>
+              </summary>
+              <div class="details-body">
+                <div class="row-2">
+                  <div class="field-check">
+                    <label for="ram">RAM présente</label>
+                    <input type="checkbox" id="ram" checked>
+                  </div>
+                  <div class="field-check">
+                    <label for="disque">Disque dur présent</label>
+                    <input type="checkbox" id="disque" checked>
+                  </div>
+                </div>
+              </div>
+            </details>
+            <div class="field"><label>Commentaire</label><input type="text" id="commentaire" placeholder="ex: Batterie faible, écran rayé..."></div>
+          </div>
+
+          <!--PC FIXE (TOUR)-->
+          <div class="fields-pc" id="fields-tour">
+            <div class="field">
+              <label>Modèle</label>
+              <select id="modele-tour" onchange="if(this.value=='Autre') document.getElementById('modele-tour-autre').style.display='block'; else document.getElementById('modele-tour-autre').style.display='none';">
+                <option value="">— Sélectionner —</option>
+                <option value="Autre">Autre...</option>
+                <option value="Acer Veriton X2640G">Acer Veriton X2640G</option>
+                <option value="Acer Veriton M2640G">Acer Veriton M2640G</option>
+                <option value="Dell OptiPlex 3050">Dell OptiPlex 3050</option>
+                <option value="Dell OptiPlex 3060">Dell OptiPlex 3060</option>
+                <option value="Lenovo ThinkCentre Tiny">Lenovo ThinkCentre Tiny</option>
+                <option value="PC OPEX Contrôleur Windows 11">PC OPEX Contrôleur Windows 11</option>
+              </select>
+              <input type="text" id="modele-tour-autre" placeholder="Précisez le modèle..." style="display:none; margin-top:8px;">
+            </div>
+            <div class="field"><label>N° d'inventaire</label><input type="text" id="ref-tour" value="" placeholder="ex: 2000-36747"></div>
+            <div class="field"><label>N° de série (S/N)</label><input type="text" id="sn-tour" placeholder="ex: PF591DDN"></div>
+            <div class="row-2">
+              <div class="field"><label>Formaté</label>
+                <select id="formate-tour"><option value="Oui">Oui</option><option value="Non">Non</option></select>
+              </div>
+              <div class="field"><label>Bon état</label>
+                <select id="etat-tour"><option value="Oui">Oui</option><option value="Non">Non</option></select>
+              </div>
+            </div>
+            <details id="details-tour" class="details-composants">
+              <summary onclick="toggleDetails('details-tour')">
+                <span>▸ Détails composants</span>
+                <span class="details-export-toggle" onclick="event.stopPropagation()">
+                  <input type="checkbox" id="export-composants-tour" checked>
+                  <label for="export-composants-tour">Inclure dans Excel</label>
+                </span>
+              </summary>
+              <div class="details-body">
+                <div class="row-2">
+                  <div class="field-check">
+                    <label for="ram-tour">RAM présente</label>
+                    <input type="checkbox" id="ram-tour" checked>
+                  </div>
+                  <div class="field-check">
+                    <label for="disque-tour">Disque dur présent</label>
+                    <input type="checkbox" id="disque-tour" checked>
+                  </div>
+                </div>
+              </div>
+            </details>
+            <div class="field"><label>Commentaire</label><input type="text" id="commentaire-tour" placeholder="ex: Ventilateur bruyant..."></div>
+          </div>
+
+          <!--ÉCRAN-->
+          <div class="fields-pc" id="fields-ecran">
+            <div class="field">
+              <label>Modèle</label>
+              <select id="modele-ecran" onchange="if(this.value=='Autre') document.getElementById('modele-ecran-autre').style.display='block'; else document.getElementById('modele-ecran-autre').style.display='none';">
+                <option value="">— Sélectionner —</option>
+                <option value="Autre">Autre...</option>
+                <option value="Acer Veriton X2640G">Acer Veriton X2640G</option>
+                <option value="Acer Veriton M2640G">Acer Veriton M2640G</option>
+                <option value="Dell OptiPlex 3050">Dell OptiPlex 3050</option>
+                <option value="Dell OptiPlex 3060">Dell OptiPlex 3060</option>
+                <option value="Lenovo ThinkCentre Tiny">Lenovo ThinkCentre Tiny</option>
+                <option value="PC OPEX Contrôleur Windows 11">PC OPEX Contrôleur Windows 11</option>
+              </select>
+              <input type="text" id="modele-ecran-autre" placeholder="Précisez le modèle..." style="display:none; margin-top:8px;">
+            </div>
+            <div class="field"><label>N° d'inventaire</label><input type="text" id="ref-ecran" value="" placeholder="ex: 2000-12345"></div>
+            <div class="field"><label>Bon état</label>
+              <select id="etat-ecran"><option value="Oui">Oui</option><option value="Non">Non</option></select>
+            </div>
+            <div class="field"><label>Commentaire</label><input type="text" id="commentaire-ecran" placeholder="ex: Pixel mort, pied manquant..."></div>
+          </div>
+
+          <!--PÉRIPHÉRIQUES-->
+          <div class="fields-pc" id="fields-periph">
+            <div class="row-2">
+              <div class="field"><label>Marque / Modèle (optionnel)</label><input type="text" id="modele-periph" placeholder="ex: Logitech MK270"></div>
+              <div class="field"><label>Quantité</label><input type="number" id="qty-periph" value="1" min="1" max="99"></div>
+            </div>
+            <div class="field"><label>Bon état</label>
+              <select id="etat-periph"><option value="Oui">Oui</option><option value="Non">Non</option></select>
+            </div>
+            <div class="field"><label>Commentaire</label><input type="text" id="commentaire-periph" placeholder="Optionnel..."></div>
+          </div>
+
+          <button class="btn-add" onclick="ajouterEquipement()">+ Ajouter à la liste</button>
+          <button class="btn-export" id="btn-export" onclick="exporterExcel()" disabled>Exporter en Excel</button>
+          <p class="counter">Total : <span id="count">0</span> équipement(s)</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Liste des équipements</div>
+      <div id="liste-container">
+        <div class="list-empty"><div class="icon"></div><p>Aucun équipement ajouté.<br>Commencez par remplir le formulaire.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-historique">
+  <div class="historique-container">
+    <div class="hist-toolbar">
+      <input type="text" id="hist-search" class="hist-search" placeholder="Rechercher une pile..." oninput="renderHistorique()">
+      <button class="btn-rapport-global" id="btn-rapport-global" onclick="exportRapportGlobal()">Exporter rapport global</button>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Historique des exports</div>
+      <div id="historique-container" style="padding: 20px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP NOM DE PILE (export) -->
+<div class="modal-overlay" id="modal-pile-overlay">
+  <div class="modal-pile">
+    <h3>Nom de la pile</h3>
+    <p>Donne un nom à cette pile pour la retrouver facilement plus tard.</p>
+    <input type="text" id="modal-pile-input" class="modal-pile-input">
+    <div class="modal-pile-actions">
+      <button class="btn-modal-cancel" onclick="fermerModalPile()">Annuler</button>
+      <button class="btn-modal-confirm" onclick="confirmerExportAvecNom()">Exporter</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP RENOMMER (historique) -->
+<div class="modal-overlay" id="modal-renommer-overlay">
+  <div class="modal-pile">
+    <h3>Renommer la pile</h3>
+    <input type="text" id="modal-renommer-input" class="modal-pile-input">
+    <div class="modal-pile-actions">
+      <button class="btn-modal-cancel" onclick="fermerModalRenommer()">Annuler</button>
+      <button class="btn-modal-confirm" onclick="confirmerRenommer()">Renommer</button>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-sauvegarde">
+  <div class="sauvegarde-container">
+    <div class="panel">
+      <div class="panel-header">Sauvegarde des données</div>
+      <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+
+        <div class="sauvegarde-card">
+          <div class="sauvegarde-info">
+            <h3>Exporter les données</h3>
+            <p>Télécharge un fichier .json avec tout l'historique. Garde-le en lieu sûr pour pouvoir le réimporter plus tard.</p>
+          </div>
+          <button class="btn-sauvegarde-export" onclick="exporterDonneesJSON()">Exporter</button>
+        </div>
+
+        <div class="sauvegarde-card">
+          <div class="sauvegarde-info">
+            <h3>Importer les données</h3>
+            <p>Charge un ou plusieurs fichiers .json exportés précédemment. Les piles sont ajoutées à l'historique actuel (les doublons sont ignorés automatiquement).</p>
+          </div>
+          <button class="btn-sauvegarde-import" onclick="document.getElementById('import-json-input').click()">Importer</button>
+          <input type="file" id="import-json-input" accept=".json" multiple style="display:none" onchange="importerDonneesJSON(this)">
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
